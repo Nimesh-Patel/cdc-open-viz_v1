@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
 import Column from './Column'
-import Context from '../context'
+import ConfigContext from '../ConfigContext'
 import CloseIcon from '../images/icon-close.svg'
 import RowUp from '../images/icon-up.svg'
 import RowDown from '../images/icon-down.svg'
@@ -15,7 +15,7 @@ import Modal from '@cdc/core/components/ui/Modal'
 import InputToggle from '@cdc/core/components/inputs/InputToggle'
 
 const RowMenu = ({ rowIdx, row }) => {
-  const { rows, config, updateConfig } = useContext(Context)
+  const { rows, config, updateConfig } = useContext(ConfigContext)
   const {overlay} = useGlobalContext()
 
   const getCurr = () => {
@@ -91,15 +91,22 @@ const RowMenu = ({ rowIdx, row }) => {
   }
 
   const rowItemsHeight = () => {
-    console.log('hit')
-    setEqualHeight(!equalHeight)
+    let modRow = [...row]
+    console.log('rowItemsHeight')
+    setEqualHeight( equalHeight => !equalHeight )
 
-    row.equalHeight = !equalHeight;
-
-    console.log('equalHeight var', equalHeight)
-    console.log('equalHeight', row.equalHeight)
+    modRow.equalHeight = !equalHeight;
+    console.log('modRow', modRow)
+    console.log('rows', rows)
+    const payloadArr = config.rows.map( (baseRow, index) => {
+      console.log('baseRow', baseRow)
+      return baseRow.uuid === rowIdx ? modRow : baseRow
+    })
+    updateConfig({...config, rows: payloadArr })
+    console.log('config', config)
+    console.log('payloadArr', payloadArr)
   }
-console.log('equal height var', row.equalHeight)
+
   const layoutList = [
     <li className={curr === '12' ? `current row-menu__list--item` : `row-menu__list--item`} onClick={() => setRowLayout([ 12 ])} key="12" title="1 Column">
       <OneColIcon />
@@ -126,9 +133,10 @@ console.log('equal height var', row.equalHeight)
         <Modal.Content>
           <InputToggle
             label='Visualizations in this row should be equal height'
-            fieldName={`toggleEqualHeight${rowIdx}`}
+            // fieldName={`toggleEqualHeight${rowIdx}`}
             value={row.equalHeight ? row.equalHeight : false}
-            updateField={rowItemsHeight}
+            // updateField={rowItemsHeight}
+            onClick={() => rowItemsHeight()}
           ></InputToggle>
         </Modal.Content>
       </Modal>

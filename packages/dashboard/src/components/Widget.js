@@ -13,7 +13,7 @@ import UsaIcon from '@cdc/core/assets/usa-graphic.svg';
 import WorldIcon from '@cdc/core/assets/world-graphic.svg';
 import AlabamaIcon from '@cdc/core/assets/alabama-graphic.svg';
 
-import Context from '../context';
+import ConfigContext from '../ConfigContext';
 
 const iconHash = {
   'data-bite' : <BiteIcon />,
@@ -42,7 +42,7 @@ const labelHash = {
 }
 
 const Widget = ({ data = {}, addVisualization, type }) => {
-  const { rows, visualizations, config, updateConfig } = useContext(Context)
+  const { rows, visualizations, config, updateConfig } = useContext(ConfigContext)
 
   const handleWidgetMove = (item, monitor) => {
       let result = monitor.getDropResult()

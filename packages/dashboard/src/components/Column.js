@@ -1,11 +1,11 @@
 import React, { useContext, memo } from 'react'
 import { useDrop } from 'react-dnd'
 
-import Context from '../context'
+import ConfigContext from '../ConfigContext'
 import Widget from './Widget'
 
 const Column = ({ data, rowIdx, colIdx }) => {
-  const { visualizations } = useContext(Context)
+  const { visualizations } = useContext(ConfigContext)
 
   const [ { isOver, canDrop }, drop ] = useDrop(() => ({
     accept: 'vis-widget',

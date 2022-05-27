@@ -14,12 +14,13 @@ const InputToggle = (
     fieldName,
     updateField,
     value: stateValue,
+    onClick,
 
     i = null, min = null, max = null,
     ...attributes
   }
 ) => {
-
+    console.log(onClick)
   const [ value, setValue ] = useState(stateValue)
 
   let name = () => {
@@ -56,7 +57,7 @@ const InputToggle = (
   }, [ value ])
 
   return (
-    <div className="input-group">
+    <div className="input-group" onClick={onClick} >
       {label && <label htmlFor={name()}>{label}</label>}
       <div className={'cove-input__toggle' + (size === 'small' ? '--small' : size === 'large' ? '--large' : '') + (toggleTypeClass()) + (value ? ' active' : '')} onClick={() => setValue(!value)}>
         <div className="cove-input__toggle-button"/>

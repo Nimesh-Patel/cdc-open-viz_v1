@@ -10,7 +10,7 @@ import {
 } from 'react-accessible-accordion';
 import { useDebounce } from 'use-debounce';
 
-import Context from '../context';
+import ConfigContext from '../ConfigContext';
 
 import ErrorBoundary from '@cdc/core/components/ErrorBoundary';
 import QuestionIcon from '@cdc/core/assets/question-circle.svg';
@@ -118,7 +118,7 @@ const EditorPanel = memo(() => {
     rawData,
     setParentConfig,
     setEditing
-  } = useContext(Context);
+  } = useContext(ConfigContext);
 
   const enforceRestrictions = (updatedConfig) => {
     // TODO

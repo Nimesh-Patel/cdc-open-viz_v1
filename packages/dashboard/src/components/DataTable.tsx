@@ -15,11 +15,11 @@ import { Base64 } from 'js-base64';
 
 import ErrorBoundary from '@cdc/core/components/ErrorBoundary';
 
-import Context from '../context';
+import ConfigContext from '../ConfigContext';
 
 export default function DataTable() {
 
-  const { data, config } = useContext<any>(Context);
+  const { data, config } = useContext<any>(ConfigContext);
 
   const [tableExpanded, setTableExpanded] = useState<boolean>(config.table ? config.table.expanded : false);
   const [accessibilityLabel, setAccessibilityLabel] = useState('');

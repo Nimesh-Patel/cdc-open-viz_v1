@@ -11,7 +11,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import parse from 'html-react-parser'
 
 import { GlobalContextProvider } from '@cdc/core/components/GlobalContext'
-import Context from './context'
+import ConfigContext from './ConfigContext'
 
 import OverlayFrame from '@cdc/core/components/ui/OverlayFrame'
 import Loading from '@cdc/core/components/Loading'
@@ -440,11 +440,11 @@ export default function CdcDashboard(
 
   return (
     <GlobalContextProvider>
-      <Context.Provider value={contextValues}>
+      <ConfigContext.Provider value={contextValues}>
         <div className={`cdc-open-viz-module type-dashboard ${currentViewport}`} ref={outerContainerRef}>
           {body}
         </div>
-      </Context.Provider>
+      </ConfigContext.Provider>
       <OverlayFrame/>
     </GlobalContextProvider>
   )
