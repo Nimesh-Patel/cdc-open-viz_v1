@@ -9,64 +9,6 @@ import colorPalettes from '../../../core/data/colorPalettes';
 import { geoAlbersUsaTerritories } from 'd3-composite-projections';
 import testJSON from '../data/dfc-map.json';
 
-const abbrs = {
-  Alabama: 'AL',
-  Alaska: 'AK',
-  Arizona: 'AZ',
-  Arkansas: 'AR',
-  California: 'CA',
-  Colorado: 'CO',
-  Connecticut: 'CT',
-  Delaware: 'DE',
-  Florida: 'FL',
-  Georgia: 'GA',
-  Hawaii: 'HI',
-  Idaho: 'ID',
-  Illinois: 'IL',
-  Indiana: 'IN',
-  Iowa: 'IA',
-  Kansas: 'KS',
-  Kentucky: 'KY',
-  Louisiana: 'LA',
-  Maine: 'ME',
-  Maryland: 'MD',
-  Massachusetts: 'MA',
-  Michigan: 'MI',
-  Minnesota: 'MN',
-  Mississippi: 'MS',
-  Missouri: 'MO',
-  Montana: 'MT',
-  Nebraska: 'NE',
-  Nevada: 'NV',
-  'New Hampshire': 'NH',
-  'New Jersey': 'NJ',
-  'New Mexico': 'NM',
-  'New York': 'NY',
-  'North Carolina': 'NC',
-  'North Dakota': 'ND',
-  Ohio: 'OH',
-  Oklahoma: 'OK',
-  Oregon: 'OR',
-  Pennsylvania: 'PA',
-  'Rhode Island': 'RI',
-  'South Carolina': 'SC',
-  'South Dakota': 'SD',
-  Tennessee: 'TN',
-  Texas: 'TX',
-  Utah: 'UT',
-  Vermont: 'VT',
-  Virginia: 'VA',
-  Washington: 'WA',
-  'West Virginia': 'WV',
-  Wisconsin: 'WI',
-  Wyoming: 'WY',
-  'District of Columbia': 'DC',
-  Guam: 'GU',
-  'Virgin Islands': 'VI',
-  'Puerto Rico': 'PR',
-  'American Samoa': 'AS'
-}
-
 
 
 // SVG ITEMS
@@ -81,11 +23,6 @@ let { features: states } = feature(testJSON, testJSON.objects.states);
 // CONSTANTS
 const STATE_BORDER = '#c0cad4';
 const STATE_INACTIVE_FILL = '#F4F7FA';
-
-// CREATE STATE LINES
-// const projection = geoAlbersUsaTerritories().translate([WIDTH/2,HEIGHT/2])
-
-
 
 const SingleStateMap = (props) => {
 
@@ -145,25 +82,6 @@ const SingleStateMap = (props) => {
 		
 	  }
   }, [state.general.statePicked]);
-
-  const geoLabel = (geo, projection) => {
-    //projection = geoAlbersUsaTerritories().translate([WIDTH/2,HEIGHT/2])
-    //const newProjection = projection.fitExtent([[PADDING, PADDING], [WIDTH - PADDING, HEIGHT - PADDING]], geo)
-    let [x, y] = projection( geoCentroid(geo) )
-    let abbr = abbrs[geo.properties.name]
-    if (abbr === 'NJ') x += 3
-    if(undefined === abbr) return null
-    let [dx, dy] = offsets[geo.properties.name]
-  
-    return (
-      <>
-        <line className="abbrLine" x1={x} y1={y} x2={x + dx} y2={y + dy} stroke="black" strokeWidth={1} />
-        <text className="abbrText" x={4} strokeWidth="0" fontSize={13} style={{fill: "#202020"}} alignmentBaseline="middle" transform={`translate(${x + dx}, ${y + dy})`}>
-          {abbr}
-        </text>
-      </>
-    )
-  }
 
   // Constructs and displays markup for all geos on the map (except territories right now)
   const constructGeoJsx = (geographies, projection) => {

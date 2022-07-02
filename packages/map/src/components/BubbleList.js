@@ -1,8 +1,14 @@
-import React, {memo, useState, useEffect} from 'react'
+import React, { memo } from 'react'
 import { scaleLinear } from 'd3-scale';
 import countryCoordinates from './../data/v2/country-coordinates.csv'
 import Papa from 'papaparse'
 
+/**
+ * World Map Bubble Overlay
+ * To add supported countries:
+ * 		* If External to CDC: Open a PR
+ * 		* If Internal to CDC: Update Spreadsheet and v2/country-coordinates
+ */
 export const BubbleList = (
 	{
 		data: dataImport,
@@ -15,7 +21,6 @@ export const BubbleList = (
 		displayGeoName
 	}) => {
 
-	const [data, setData] = useState(Object.values(dataImport))
 	const maxDataValue = Math.max(...dataImport.map(d => d[state.columns.primary.name]))
 
 	// Set bubble sizes
@@ -70,7 +75,6 @@ export const BubbleList = (
 				style={{ transition: 'all .25s ease-in-out', cursor: "pointer" }}
 			/>
 		);
-	
 
 		return (
 			<g key={`group-${countryName.replace(' ', '')}`}>
