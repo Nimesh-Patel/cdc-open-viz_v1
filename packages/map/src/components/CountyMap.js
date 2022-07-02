@@ -9,7 +9,8 @@ import { CustomProjection } from '@visx/geo';
 import colorPalettes from '../../../core/data/colorPalettes'
 import { geoAlbersUsaTerritories } from 'd3-composite-projections';
 import { abbrs } from '../data/abbreviations';
-import countyJSON from '../data/dfc-map.json';
+
+import countyJSON from '../data/topo-json/county.json';
 
 const offsets = {
 	Vermont: [50, -8],

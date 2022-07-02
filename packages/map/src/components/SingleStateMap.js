@@ -7,7 +7,7 @@ import { feature, mesh } from "topojson-client";
 import { CustomProjection } from '@visx/geo';
 import colorPalettes from '../../../core/data/colorPalettes';
 import { geoAlbersUsaTerritories } from 'd3-composite-projections';
-import countyJSON from '../data/dfc-map.json';
+import countyJSON from '../data/topo-json/county.json';
 
 
 // SVG ITEMS

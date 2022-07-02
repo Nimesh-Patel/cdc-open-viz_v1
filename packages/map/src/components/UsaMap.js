@@ -4,7 +4,7 @@ import { jsx } from '@emotion/react'
 import ErrorBoundary from '@cdc/core/components/ErrorBoundary';
 import { geoCentroid } from "d3-geo";
 import { feature } from "topojson-client";
-import topoJSON from '../data/us-topo.json';
+import topoJSON from '../data/topo-json/us-topo.json';
 import hexTopoJSON from '../data/us-hex-topo.json';
 import { AlbersUsa, Mercator } from '@visx/geo';
 import chroma from 'chroma-js';
