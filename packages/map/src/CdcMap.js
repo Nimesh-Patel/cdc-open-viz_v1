@@ -120,7 +120,8 @@ const CdcMap = ({className, config, navigationHandler: customNavigationHandler, 
         try {
             if (filteredCountryCode) {
                 const filteredCountryObj = runtimeData[filteredCountryCode]
-                const coordinates = filteredCountryObj.coordinates
+                let coordinates = filteredCountryObj.coordinates
+                if(typeof coordinates === 'string') coordinates = JSON.parse(coordinates)
                 const long = coordinates[1]
                 const lat = coordinates[0]
                 const reversedCoordinates = [long, lat];

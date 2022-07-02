@@ -1,6 +1,7 @@
 import React, {memo, useState, useEffect} from 'react'
 import { scaleLinear } from 'd3-scale';
-import { countryCoordinates } from '../data/country-coordinates';
+import countryCoordinates from './../data/v2/country-coordinates.csv'
+import Papa from 'papaparse'
 
 export const BubbleList = (
 	{
@@ -25,19 +26,31 @@ export const BubbleList = (
 	// Start looping through the countries to create the bubbles.
 	const countries = runtimeData && Object.values(runtimeData).map( (country, index) => {
 
-		// get coordinates from ISO
-		country.coordinates = countryCoordinates[country.uid]
+		// Read in country codes, shift to get rid of header on table.
+		const countriesFromCsv = Papa.parse(countryCoordinates).data;
+		countriesFromCsv.shift()
+
+		/**
+		 *	This sets the coordinates property on the country object.
+		 *  The imported datas structure is: ['USA', [lat, long]
+		 *	Returns the country coordinates as a STRING, later we use JSON.parse to get the array.
+		*/
+		country.coordinates = countriesFromCsv.filter(filtered => filtered[0] === country.uid).map(item => item[1])[0]
 
 		let {coordinates} = country
 
 		if(!coordinates) return true;
 
+		// Force an array from the string '[lat,long]'
+		coordinates = JSON.parse(coordinates)
+		
 		const countryName = displayGeoName(country[state.columns.geo.name]);
 		const toolTip = applyTooltipsToGeo(countryName, country);
 		const legendColors = applyLegendToRow(country);
-		
-		let primaryKey = state.columns.primary.name
-		let transform = `translate(${projection([coordinates[1], coordinates[0]])})`
+		const dataColumnName = state.columns.primary.name
+		const longitude = Number(coordinates[1])
+		const latitude = Number(coordinates[0])
+		const transform = `translate(${projection( [longitude, latitude] )})`
 
 		const circle = (
 			<circle
@@ -47,7 +60,7 @@ export const BubbleList = (
 				className="bubble"
 				cx={ Number(projection(coordinates[1], coordinates[0])[0]) || 0  } // || 0 handles error on loads where the data isn't ready
 				cy={ Number(projection(coordinates[1], coordinates[0])[1]) || 0 }
-				r={ Number(size(country[primaryKey])) }
+				r={ Number(size(country[dataColumnName])) }
 				fill={legendColors[0] }
 				stroke={legendColors[0]}
 				strokeWidth={3}
