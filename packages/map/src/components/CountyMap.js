@@ -8,8 +8,8 @@ import { feature, mesh } from 'topojson-client';
 import { CustomProjection } from '@visx/geo';
 import colorPalettes from '../../../core/data/colorPalettes'
 import { geoAlbersUsaTerritories } from 'd3-composite-projections';
-import testJSON from '../data/dfc-map.json';
 import { abbrs } from '../data/abbreviations';
+import countyJSON from '../data/dfc-map.json';
 
 const offsets = {
 	Vermont: [50, -8],
@@ -33,8 +33,8 @@ const HEIGHT = 500;
 const PADDING = 25;
 
 // DATA
-let { features: counties } = feature(testJSON, testJSON.objects.counties);
-let { features: states } = feature(testJSON, testJSON.objects.states);
+let { features: counties } = feature(countyJSON, countyJSON.objects.counties);
+let { features: states } = feature(countyJSON, countyJSON.objects.states);
 
 // CONSTANTS
 const STATE_BORDER = '#c0cad4';
@@ -43,7 +43,7 @@ const STATE_INACTIVE_FILL = '#F4F7FA';
 // CREATE STATE LINES
 const projection = geoAlbersUsaTerritories().translate([WIDTH / 2, HEIGHT / 2]);
 const path = geoPath().projection(projection);
-const stateLines = path(mesh(testJSON, testJSON.objects.states));
+const stateLines = path(mesh(countyJSON, countyJSON.objects.states));
 
 const nudges = {
 	'US-FL': [15, 3],
@@ -190,11 +190,11 @@ const CountyMap = (props) => {
 		let svgContainer = document.querySelector('.svg-container')
 		svgContainer.setAttribute('data-scaleZoom', newScaleWithHypot)
 
-		const state = testJSON.objects.states.geometries.filter((el, index) => {
+		const state = countyJSON.objects.states.geometries.filter((el, index) => {
 			return el.id === myState.id;
 		});
 
-		const focusedStateLine = path(mesh(testJSON, state[0]));
+		const focusedStateLine = path(mesh(countyJSON, state[0]));
 
 		currentState.style.display = 'none';
 
@@ -251,11 +251,11 @@ const CountyMap = (props) => {
 		const allStates = document.querySelectorAll('.state path');
 
 
-		let state = testJSON.objects.states.geometries.filter((el, index) => {
+		let state = countyJSON.objects.states.geometries.filter((el, index) => {
 			return el.id === myState;
 		});
 
-		let focusedStateLine = path(mesh(testJSON, state[0]));
+		let focusedStateLine = path(mesh(countyJSON, state[0]));
 		focusedBorderPath.current.style.display = 'block';
 		focusedBorderPath.current.setAttribute('d', focusedStateLine);
 		focusedBorderPath.current.setAttribute('stroke', '#000');

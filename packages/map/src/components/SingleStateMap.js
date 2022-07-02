@@ -7,8 +7,7 @@ import { feature, mesh } from "topojson-client";
 import { CustomProjection } from '@visx/geo';
 import colorPalettes from '../../../core/data/colorPalettes';
 import { geoAlbersUsaTerritories } from 'd3-composite-projections';
-import testJSON from '../data/dfc-map.json';
-
+import countyJSON from '../data/dfc-map.json';
 
 
 // SVG ITEMS
@@ -17,8 +16,8 @@ const HEIGHT = 500;
 const PADDING = 25;
 
 // DATA
-let { features: counties } = feature(testJSON, testJSON.objects.counties)
-let { features: states } = feature(testJSON, testJSON.objects.states);
+let { features: counties } = feature(countyJSON, countyJSON.objects.counties)
+let { features: states } = feature(countyJSON, countyJSON.objects.states);
 
 // CONSTANTS
 const STATE_BORDER = '#c0cad4';
@@ -93,13 +92,13 @@ const SingleStateMap = (props) => {
 
     const StateOutput = () => {
 
-		let geo = testJSON.objects.states.geometries.filter( s => {
+		let geo = countyJSON.objects.states.geometries.filter( s => {
 			return s.id === statePassed.id
 		})
 
 		
-		// const stateLine = path(mesh(testJSON, lines ))
-		let stateLines = path(mesh(testJSON, geo[0]))
+		// const stateLine = path(mesh(countyJSON, lines ))
+		let stateLines = path(mesh(countyJSON, geo[0]))
         return (
           <g
             key={'single-state'}
