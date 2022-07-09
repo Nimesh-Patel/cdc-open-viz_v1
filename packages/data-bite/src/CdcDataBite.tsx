@@ -445,7 +445,7 @@ const { configUrl, config: configObj, isDashboard = false, isEditor = false, set
       <>
         {isEditor && <EditorPanel />}
         <div className={isEditor ? 'spacing-wrapper' : ''}>
-          <div className="cdc-data-bite-inner-container">
+          <div className={`cdc-data-bite-inner-container ${ title ? 'has-title' : '' }`}>
             {title && <div className="bite-header">{parse(title)}</div>}
             <div className={`bite ${biteClasses.join(' ')}`}>
               <div className="bite-content-container">

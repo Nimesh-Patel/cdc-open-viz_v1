@@ -168,7 +168,7 @@
           display: grid;
         }
 
-        .cdc-data-bite-inner-container {
+        .cdc-data-bite-inner-container.has-title {
           grid-template-rows: auto 1fr;
         }
       }

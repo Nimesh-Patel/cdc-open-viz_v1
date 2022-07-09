@@ -90,21 +90,11 @@ const RowMenu = ({ rowIdx, row }) => {
     updateConfig({...config, rows})
   }
 
-  const rowItemsHeight = () => {
-    let modRow = [...row]
-    console.log('rowItemsHeight')
+  const rowItemsHeight = async () => {
+    let modRows = [...rows]
     setEqualHeight( equalHeight => !equalHeight )
-
-    modRow.equalHeight = !equalHeight;
-    console.log('modRow', modRow)
-    console.log('rows', rows)
-    const payloadArr = config.rows.map( (baseRow, index) => {
-      console.log('baseRow', baseRow)
-      return baseRow.uuid === rowIdx ? modRow : baseRow
-    })
-    updateConfig({...config, rows: payloadArr })
-    console.log('config', config)
-    console.log('payloadArr', payloadArr)
+    modRows[rowIdx].equalHeight = !equalHeight;
+    updateConfig({...config, rows: modRows })
   }
 
   const layoutList = [
