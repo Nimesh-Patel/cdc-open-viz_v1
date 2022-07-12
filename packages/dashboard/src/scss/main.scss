@@ -147,13 +147,16 @@
   .dashboard-col-12 {
     width: 100%;
   }
+
   @include breakpointClass(md) {
     .dashboard-row {
       flex-direction: row;
       margin: 1em 0;
       justify-content: space-between;
       column-gap: 1em;
-    }
+
+      &.equal-height {
+        align-items: stretch;
 
         // This makes sure each inside div is full height
         .dashboard-col,
@@ -165,7 +168,7 @@
           display: grid;
         }
 
-        .cdc-data-bite-inner-container.has-title {
+        .cdc-data-bite-inner-container.bite--has-title {
           grid-template-rows: auto 1fr;
         }
       }
@@ -180,6 +183,8 @@
       width: 33%;
     }
   }
+
+
 
   @include breakpointClass(sm) {
     .dashboard-col {
