@@ -31,6 +31,8 @@ import defaults from './data/initial-state'
 import Widget from './components/Widget'
 import DataTable from './components/DataTable'
 
+import Papa from 'papaparse'
+
 import './scss/main.scss'
 
 const addVisualization = (type, subType) => {
@@ -73,9 +75,9 @@ const VisualizationsPanel = () => (
     </div>
     <span className="subheading-3">Map</span>
     <div className="drag-grid">
-      <Widget addVisualization={() => addVisualization('map', 'us')} type="us" />
-      <Widget addVisualization={() => addVisualization('map', 'world')} type="world" />
-      <Widget addVisualization={() => addVisualization('map', 'single-state')} type="single-state" />
+      <Widget addVisualization={() => addVisualization('map', 'us')} type="us"/>
+      <Widget addVisualization={() => addVisualization('map', 'world')} type="world"/>
+      <Widget addVisualization={() => addVisualization('map', 'single-state')} type="single-state"/>
     </div>
     <span className="subheading-3">Misc.</span>
     <div className="drag-grid">
@@ -87,12 +89,12 @@ const VisualizationsPanel = () => (
 )
 
 export default function CdcDashboard(
-  { configUrl = '', config: configObj = undefined, isEditor = false, setConfig: setParentConfig }
+  { configUrl = '', config: configObj = undefined, isEditor = false, setConfig: setParentConfig, hostname }
 ) {
 
   const transform = new DataTransform()
 
-  const [ config, setConfig ] = useState(configObj ?? {})
+  const [ config, setConfig ] = useState(configObj)
 
   const [ data, setData ] = useState([])
 
@@ -104,32 +106,77 @@ export default function CdcDashboard(
 
   const [ currentViewport, setCurrentViewport ] = useState('lg')
 
-  const { title, description } = config.dashboard || config
+  const { title, description } = config ? (config.dashboard || config) : {}
 
-  const loadConfig = async () => {
-    let response = configObj || await (await fetch(configUrl)).json()
+  // Supports JSON or CSV
+  const fetchRemoteData = async (url) => {
+    try {
+      const urlObj = new URL(url)
+      const regex = /(?:\.([^.]+))?$/
 
-    // If data is included through a URL, fetch that and store
-    let data = response.formattedData || response.data || {}
+      let data = []
 
-    if (response.dataUrl) {
-      const dataString = await fetch(response.dataUrl)
+      const ext = (regex.exec(urlObj.pathname)[1])
+      if ('csv' === ext) {
+        data = await fetch(url)
+          .then(response => response.text())
+          .then(responseText => {
+            const parsedCsv = Papa.parse(responseText, {
+              header: true,
+              dynamicTyping: true,
+              skipEmptyLines: true
+            })
+            return parsedCsv.data
+          })
+      }
 
-      data = await dataString.json()
+      if ('json' === ext) {
+        data = await fetch(url)
+          .then(response => response.json())
+      }
 
-      if (data && response.dataDescription) {
-        try {
-          data = transform.autoStandardize(data)
-          data = transform.developerStandardize(data, response.dataDescription)
-        } catch (e) {
-          //Data not able to be standardized, leave as is
-        }
+      return data
+    } catch {
+      // If we can't parse it, still attempt to fetch it
+      try {
+        let response = await (await fetch(configUrl)).json()
+        return response
+      } catch {
+        console.error(`Cannot parse URL: ${url}`)
+      }
+    }
+  }
+
+  const loadConfig = async (configObj) => {
+    // Set loading flag
+    if (!loading) setLoading(true)
+
+    let newState = configObj || await (await fetch(configUrl)).json()
+
+    // If a dataUrl property exists, always pull from that.
+    if (newState.dataUrl) {
+      if (newState.dataUrl[0] === '/') {
+        newState.dataUrl = 'https://' + hostname + newState.dataUrl
+      }
+
+      let newData = await fetchRemoteData(newState.dataUrl)
+
+      if (newData && newState.dataDescription) {
+        newData = transform.autoStandardize(newData)
+        newData = transform.developerStandardize(newData, newState.dataDescription)
+      }
+
+      if (newData) {
+        newState.data = newData
       }
     }
 
+    // If data is included through a URL, fetch that and store
+    let data = newState.formattedData || newState.data || {}
+
     setData(data)
 
-    let newConfig = { ...defaults, ...response }
+    let newConfig = { ...defaults, ...newState }
 
     updateConfig(newConfig, data)
 
@@ -204,7 +251,7 @@ export default function CdcDashboard(
 
   // Load data when component first mounts
   useEffect(() => {
-    loadConfig()
+    loadConfig(config)
   }, [])
 
   // Pass up to <CdcEditor /> if it exists when config state changes
@@ -311,35 +358,20 @@ export default function CdcDashboard(
 
         switch (visualizationConfig.type) {
           case 'chart':
-            body = <><Header back={back} subEditor="Chart"/><CdcChart key={visualizationKey}
-                                                                      config={visualizationConfig} isEditor={true}
-                                                                      setConfig={updateConfig} isDashboard={true}/></>
+            body = <><Header back={back} subEditor="Chart"/><CdcChart key={visualizationKey} config={visualizationConfig} isEditor={true} setConfig={updateConfig} isDashboard={true}/></>
             break
           case 'map':
-            body = <><Header back={back} subEditor="Map"/><CdcMap key={visualizationKey} config={visualizationConfig}
-                                                                  isEditor={true} setConfig={updateConfig}
-                                                                  isDashboard={true}/></>
+            body = <><Header back={back} subEditor="Map"/><CdcMap key={visualizationKey} config={visualizationConfig} isEditor={true} setConfig={updateConfig} isDashboard={true}/></>
             break
           case 'data-bite':
             visualizationConfig = { ...visualizationConfig, newViz: true }
-            body = <><Header back={back} subEditor="Data Bite"/><CdcDataBite key={visualizationKey}
-                                                                             config={visualizationConfig}
-                                                                             isEditor={true} setConfig={updateConfig}
-                                                                             isDashboard={true}/></>
+            body = <><Header back={back} subEditor="Data Bite"/><CdcDataBite key={visualizationKey} config={visualizationConfig} isEditor={true} setConfig={updateConfig} isDashboard={true}/></>
             break
           case 'waffle-chart':
-            body = <><Header back={back} subEditor="Waffle Chart"/><CdcWaffleChart key={visualizationKey}
-                                                                                   config={visualizationConfig}
-                                                                                   isEditor={true}
-                                                                                   setConfig={updateConfig}
-                                                                                   isDashboard={true}/></>
+            body = <><Header back={back} subEditor="Waffle Chart"/><CdcWaffleChart key={visualizationKey} config={visualizationConfig} isEditor={true} setConfig={updateConfig} isDashboard={true}/></>
             break
           case 'markup-include':
-            body = <><Header back={back} subEditor="Markup Include"/><CdcMarkupInclude key={visualizationKey}
-                                                                                       config={visualizationConfig}
-                                                                                       isEditor={true}
-                                                                                       setConfig={updateConfig}
-                                                                                       isDashboard={true}/></>
+            body = <><Header back={back} subEditor="Markup Include"/><CdcMarkupInclude key={visualizationKey} config={visualizationConfig} isEditor={true} setConfig={updateConfig} isDashboard={true}/></>
             break
         }
       }
@@ -363,8 +395,7 @@ export default function CdcDashboard(
         {isEditor && <EditorPanel/>}
         <div className="cdc-dashboard-inner-container">
           {/* Title */}
-          {title &&
-            <div role="heading" className={`dashboard-title ${config.dashboard.theme ?? 'theme-blue'}`}>{title}</div>}
+          {title && <div role="heading" className={`dashboard-title ${config.dashboard.theme ?? 'theme-blue'}`}>{title}</div>}
 
           {/* Filters */}
           {config.dashboard.filters && <Filters/>}
@@ -375,7 +406,7 @@ export default function CdcDashboard(
             if (row.filter(col => col.widget).length === 0) return null
 
             return (
-              <div className={`dashboard-row ${ row.equalHeight ? 'equal-height' : '' }`} key={`row__${index}`}>
+              <div className="dashboard-row" key={`row__${index}`}>
                 {row.map((col, index) => {
                   if (col.width) {
                     if (!col.widget) return <div className={`dashboard-col dashboard-col-${col.width}`}></div>
@@ -385,31 +416,21 @@ export default function CdcDashboard(
                     visualizationConfig.data = filteredData || data
 
                     return <div className={`dashboard-col dashboard-col-${col.width}`} key={`vis__${index}`}>
-                      {visualizationConfig.type === 'chart' &&
-                        <CdcChart key={col.widget} config={visualizationConfig} isEditor={false}
-                                  setConfig={(newConfig) => {
-                                    updateChildConfig(col.widget, newConfig)
-                                  }} isDashboard={true}/>}
-                      {visualizationConfig.type === 'map' &&
-                        <CdcMap key={col.widget} config={visualizationConfig} isEditor={false}
-                                setConfig={(newConfig) => {
-                                  updateChildConfig(col.widget, newConfig)
-                                }} isDashboard={true}/>}
-                      {visualizationConfig.type === 'data-bite' &&
-                        <CdcDataBite key={col.widget} config={visualizationConfig} isEditor={false}
-                                     setConfig={(newConfig) => {
-                                       updateChildConfig(col.widget, newConfig)
-                                     }} isDashboard={true}/>}
-                      {visualizationConfig.type === 'waffle-chart' &&
-                        <CdcWaffleChart key={col.widget} config={visualizationConfig} isEditor={false}
-                                        setConfig={(newConfig) => {
-                                          updateChildConfig(col.widget, newConfig)
-                                        }} isDashboard={true}/>}
-                      {visualizationConfig.type === 'markup-include' &&
-                        <CdcMarkupInclude key={col.widget} config={visualizationConfig} isEditor={false}
-                                          setConfig={(newConfig) => {
-                                            updateChildConfig(col.widget, newConfig)
-                                          }} isDashboard={true}/>}
+                      {visualizationConfig.type === 'chart' && <CdcChart key={col.widget} config={visualizationConfig} isEditor={false} setConfig={(newConfig) => {
+                        updateChildConfig(col.widget, newConfig)
+                      }} isDashboard={true}/>}
+                      {visualizationConfig.type === 'map' && <CdcMap key={col.widget} config={visualizationConfig} isEditor={false} setConfig={(newConfig) => {
+                        updateChildConfig(col.widget, newConfig)
+                      }} isDashboard={true}/>}
+                      {visualizationConfig.type === 'data-bite' && <CdcDataBite key={col.widget} config={visualizationConfig} isEditor={false} setConfig={(newConfig) => {
+                        updateChildConfig(col.widget, newConfig)
+                      }} isDashboard={true}/>}
+                      {visualizationConfig.type === 'waffle-chart' && <CdcWaffleChart key={col.widget} config={visualizationConfig} isEditor={false} setConfig={(newConfig) => {
+                        updateChildConfig(col.widget, newConfig)
+                      }} isDashboard={true}/>}
+                      {visualizationConfig.type === 'markup-include' && <CdcMarkupInclude key={col.widget} config={visualizationConfig} isEditor={false} setConfig={(newConfig) => {
+                        updateChildConfig(col.widget, newConfig)
+                      }} isDashboard={true}/>}
                     </div>
                   }
                 })}

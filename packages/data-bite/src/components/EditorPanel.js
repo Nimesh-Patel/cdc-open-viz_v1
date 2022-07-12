@@ -331,7 +331,7 @@ const EditorPanel = memo(() => {
                     <Tooltip style={{textTransform: 'none'}}>
                       <Tooltip.Target><Icon display="question" style={{marginLeft: '0.5rem'}}/></Tooltip.Target>
                       <Tooltip.Content>
-                        <p>Enter the message text for the visualization. <br/><br/><small>The following HTML tags are supported:<br/> strong, em, sup, and sub.</small></p>
+                        <p>Enter the message text for the visualization. The following HTML tags are supported: strong, em, sup, and sub.</p>
                       </Tooltip.Content>
                     </Tooltip>
                   }/>
@@ -340,10 +340,7 @@ const EditorPanel = memo(() => {
                       <Tooltip.Target><Icon display="question" style={{marginLeft: '0.5rem'}}/></Tooltip.Target>
                       <Tooltip.Content>
                         <p>
-                          Enter supporting text to display below the data visualization, if applicable. <br/>
-                          <br/>
-                          <small>The following HTML tags are supported: strong, em, sup, and sub.</small>
-                        </p>
+                          Enter supporting text to display below the data visualization, if applicable. The following HTML tags are supported: strong, em, sup, and sub.</p>
                       </Tooltip.Content>
                     </Tooltip>
                   }/>
@@ -432,9 +429,14 @@ const EditorPanel = memo(() => {
                   </AccordionItemButton>
                 </AccordionItemHeading>
                 <AccordionItemPanel>
-                  <TextField type="number" value={config.biteFontSize} fieldName="biteFontSize" label="Bite Font Size" updateField={updateField} min="16" max="65" />
+                  <TextField type="number" value={config.biteFontSize} fieldName="biteFontSize" label="Bite Font Size" updateField={updateField} min="17" max="65" />
                   <Select value={config.fontSize} fieldName="fontSize" label="Overall Font Size" updateField={updateField} options={['small', 'medium', 'large']} />
                   <CheckBox value={config.shadow} fieldName="shadow" label="Display Shadow" updateField={updateField} />
+                  <CheckBox value={config.visual?.border} section="visual" fieldName="border" label="Display Border" updateField={updateField} />
+                  <CheckBox value={config.visual?.accent} section="visual" fieldName="accent" label="Use Accent Style" updateField={updateField} />
+                  <CheckBox value={config.visual?.roundedBorders} section="visual" fieldName="roundedBorders" label="Use Rounded Borders" updateField={updateField} />
+                  <CheckBox value={config.visual?.background} section="visual" fieldName="background" label="Use Theme Background Color" updateField={updateField} />
+                  <CheckBox value={config.visual?.hideBackgroundColor} section="visual" fieldName="hideBackgroundColor" label="Hide Background Color" updateField={updateField} />
                   <label className="header">
                     <span className="edit-label">Theme</span>
                     <ul className="color-palette">

@@ -20,7 +20,7 @@ const InputToggle = (
     ...attributes
   }
 ) => {
-    console.log(onClick)
+
   const [ value, setValue ] = useState(stateValue)
 
   let name = () => {

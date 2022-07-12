@@ -9,6 +9,9 @@ export default {
   lollipopShape: 'circle',
   lollipopColorStyle: 'two-tone',
   visualizationSubType: 'regular',
+  barStyle:'',
+  roundingStyle:'standard',
+  tipRounding:'top',
   padding: {
     left: 5,
     right: 5
@@ -18,9 +21,12 @@ export default {
     hideLabel: false,
     hideTicks: false,
     size: 50,
-    gridLines: false
+    gridLines: false,
+    min: undefined,
+    max:undefined
   },
   barThickness: 0.35,
+  barHeight: 25,
   height: 300,
   xAxis: {
     type: 'categorical',
@@ -28,7 +34,9 @@ export default {
     hideLabel: false,
     hideTicks: false,
     size: 75,
-    tickRotation: 0
+    tickRotation: 0,
+    min: undefined,
+    max:undefined
   },
   table: {
     label: 'Data Table',
@@ -37,7 +45,8 @@ export default {
   orientation: 'vertical',
   legend: {
     behavior: 'isolate',
-    position: 'right'
+    position: 'right',
+    reverseLabelOrder:false
   },
   exclusions: {
     active: false,

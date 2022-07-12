@@ -125,7 +125,6 @@ const RowMenu = ({ rowIdx, row }) => {
             label='Visualizations in this row should be equal height'
             // fieldName={`toggleEqualHeight${rowIdx}`}
             value={row.equalHeight ? row.equalHeight : false}
-            // updateField={rowItemsHeight}
             onClick={() => rowItemsHeight()}
           ></InputToggle>
         </Modal.Content>
